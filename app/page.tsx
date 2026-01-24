@@ -16,8 +16,10 @@ import {
   Globe,
   FileText,
 } from "lucide-react";
+import { supabase } from "@/utils/lib/supabase";
 
 export default function LetterheadGenerator() {
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     id: "", // Document ID
     name: "",
@@ -43,6 +45,49 @@ export default function LetterheadGenerator() {
         setData({ ...data, logoUrl: reader.result as string });
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const saveToSupabase = async () => {
+    setLoading(true);
+    const { data: savedData, error } = await supabase
+      .from("letterheads")
+      .insert([
+        {
+          name: data.name,
+          address: data.address,
+          email: data.email,
+          phone: data.phone,
+          website: data.website,
+          logo_url: data.logoUrl,
+          content: data.content,
+        },
+      ])
+      .select()
+      .single();
+
+    setLoading(false);
+    if (error) {
+      alert("Error saving: " + error.message);
+      return null;
+    }
+
+    console.log("savedData from supabase ", savedData);
+
+    // Update local state with the new ID from Supabase
+    setData((prev) => ({ ...prev, id: savedData.id }));
+    return savedData.id;
+  };
+
+  const handleDownload = async () => {
+    // 1. Save to database first to get a permanent ID
+    const dbId = await saveToSupabase();
+
+    if (dbId) {
+      // 2. Wait a split second for React to render the QR with the new ID
+      setTimeout(() => {
+        exportToPDF("letterhead-paper", `${data.name || "Letter"}.pdf`);
+      }, 500);
     }
   };
 
@@ -197,15 +242,11 @@ export default function LetterheadGenerator() {
         {/* Sidebar Footer */}
         <div className="p-6 border-t bg-zinc-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           <button
-            onClick={() =>
-              exportToPDF(
-                "letterhead-paper",
-                `${data.name || "Company"}-Letterhead.pdf`
-              )
-            }
-            className="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-lg flex items-center justify-center gap-3 hover:bg-blue-700 shadow-lg hover:shadow-blue-200 transition-all active:scale-95"
+            disabled={loading}
+            onClick={handleDownload}
+            className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold"
           >
-            <Download className="w-6 h-6" /> Download PDF
+            {loading ? "Saving to Cloud..." : "Download & Save PDF"}
           </button>
         </div>
       </aside>

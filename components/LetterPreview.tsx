@@ -6,10 +6,13 @@ import { QRCodeSVG } from "qrcode.react";
 export default function LetterheadPreview({ data }: { data: any }) {
   if (!data) return null;
 
+  // Inside LetterheadPreview.tsx
   const viewUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/view/${data.id}`
-      : `https://yourapp.com/view/${data.id}`;
+      : `https://your-app-domain.com/view/${data.id}`; // Replace with your actual domain
+
+  console.log("viewUrl ", viewUrl);
 
   return (
     <div
