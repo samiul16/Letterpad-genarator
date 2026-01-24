@@ -10,15 +10,16 @@ export const exportToPDF = async (
   if (!element) return;
 
   try {
-    // 1. Convert HTML to a high-quality PNG
-    // html-to-image handles oklch/lab/variable colors much better than html2canvas
+    // 1. Capture the element
     const dataUrl = await toPng(element, {
-      quality: 1.0,
-      pixelRatio: 2,
-      cacheBust: true,
+      quality: 0.95,
+      pixelRatio: 2, // Keeps it sharp
+      skipFonts: false,
+      // This ensures images (especially base64) are processed correctly
+      preferredFontFormat: "woff2",
     });
 
-    // 2. Create PDF
+    // 2. Setup A4 PDF
     const pdf = new jsPDF({
       orientation: "portrait",
       unit: "mm",
@@ -28,10 +29,11 @@ export const exportToPDF = async (
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+    // 3. Add to PDF and Save
+    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
     pdf.save(fileName);
   } catch (error) {
-    console.error("oops, something went wrong!", error);
-    alert("Failed to generate PDF. Check console for details.");
+    console.error("PDF Generation failed:", error);
+    alert("Error creating PDF. Please try a smaller logo or check console.");
   }
 };

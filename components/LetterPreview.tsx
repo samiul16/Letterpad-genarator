@@ -37,7 +37,7 @@ export default function LetterheadPreview({ data }: { data: any }) {
               <img
                 src={data.logoUrl}
                 alt="Logo"
-                className="h-32 w-32 object-contain"
+                className="h-44 w-44 object-contain"
               />
             ) : (
               <div className="h-32 w-32 bg-zinc-100 flex items-center justify-center text-zinc-400 border border-dashed border-zinc-300">
@@ -77,9 +77,18 @@ export default function LetterheadPreview({ data }: { data: any }) {
         </header>
 
         {/* 3. WATERMARK */}
+        {/* 3. WATERMARK (Larger & Diagonal) */}
         {data.logoUrl && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.2] select-none z-0">
-            <img src={data.logoUrl} alt="" className="w-1/2 object-contain" />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
+            <img
+              src={data.logoUrl}
+              alt="watermark"
+              className="w-[90%] max-h-[70%] opacity-[0.12] -rotate-[35deg] object-contain transition-transform"
+              style={{
+                // Force hardware acceleration for smoother rendering in some browsers
+                transform: "rotate(-10deg) scale(1.1)",
+              }}
+            />
           </div>
         )}
 

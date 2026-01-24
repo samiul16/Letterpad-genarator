@@ -37,7 +37,12 @@ export default function LetterheadGenerator() {
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setData({ ...data, logoUrl: URL.createObjectURL(file) });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // reader.result will be a base64 string
+        setData({ ...data, logoUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
