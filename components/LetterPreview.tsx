@@ -9,8 +9,8 @@ export default function LetterheadPreview({ data }: { data: any }) {
   // Inside LetterheadPreview.tsx
   const viewUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/view/${data.id}`
-      : `https://your-app-domain.com/view/${data.id}`; // Replace with your actual domain
+      ? `${window.location.origin}/view?id=${data.id}`
+      : `https://your-app-domain.com/view?id=${data.id}`; // Replace with your actual domain
 
   console.log("viewUrl ", viewUrl);
 
