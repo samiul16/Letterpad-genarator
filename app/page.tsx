@@ -230,7 +230,8 @@ export default function LetterheadGenerator() {
             <h3 className="text-xs font-black uppercase text-zinc-900 tracking-widest flex items-center gap-2">
               <FileText size={14} /> Letter Content
             </h3>
-            <div className="border-2 border-zinc-200 rounded-lg overflow-hidden focus-within:border-blue-500 transition-all">
+            {/* Removed 'overflow-hidden' and 'border' here because the Editor component handles it better now */}
+            <div className="focus-within:ring-2 focus-within:ring-blue-500 rounded-lg transition-all">
               <Editor
                 content={data.content}
                 onChange={(html) => setData({ ...data, content: html })}
