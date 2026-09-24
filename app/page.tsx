@@ -97,6 +97,8 @@ export default function LetterheadGenerator() {
     // 1. Save to database first to get a permanent ID
     const dbId = await saveToSupabase();
 
+    console.log("dbId", dbId);
+
     if (dbId) {
       // 2. Wait a split second for React to render the QR with the new ID
       setTimeout(() => {
