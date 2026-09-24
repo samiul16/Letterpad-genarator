@@ -113,11 +113,22 @@ export default function LetterheadPreview({ data }: { data: any }) {
           </div>
 
           {/* Signature Area */}
+          {/* Updated Signature Area */}
           <div className="text-right">
-            <div className="mb-14 h-12 flex items-end justify-center">
-              <span className="text-[10px] text-zinc-200 italic uppercase">
-                Stamp / Seal Here
-              </span>
+            <div className="mb-2 h-24 w-64 flex items-end justify-end relative">
+              {data.signatureUrl ? (
+                <img
+                  src={data.signatureUrl}
+                  alt="Signature"
+                  className="max-h-full max-w-full object-contain mix-blend-multiply"
+                />
+              ) : (
+                <div className="w-full h-full border border-dashed border-zinc-200 flex items-center justify-center">
+                  <span className="text-[10px] text-zinc-300 italic uppercase">
+                    Stamp / Seal Here
+                  </span>
+                </div>
+              )}
             </div>
             <div className="w-64 border-b-2 border-zinc-900 mb-2 ml-auto" />
             <p className="text-sm font-black text-zinc-900 uppercase">

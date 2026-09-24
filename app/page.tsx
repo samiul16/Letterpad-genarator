@@ -7,6 +7,7 @@ import Editor from "@/components/Editor";
 import LetterheadPreview from "@/components/LetterPreview";
 import { exportToPDF } from "@/utils/exportToPDF";
 import {
+  PenTool,
   Download,
   Building2,
   MapPin,
@@ -21,15 +22,27 @@ import { supabase } from "@/utils/lib/supabase";
 export default function LetterheadGenerator() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
-    id: "", // Document ID
+    id: "",
     name: "",
     address: "",
     email: "",
     phone: "",
     website: "",
     logoUrl: null as string | null,
+    signatureUrl: null as string | null, // 1. Add this state
     content: "<h2>Subject: Official Statement</h2><p>Content goes here...</p>",
   });
+
+  const handleSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setData({ ...data, signatureUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Initialize a unique ID on load
   useEffect(() => {
@@ -60,6 +73,7 @@ export default function LetterheadGenerator() {
           phone: data.phone,
           website: data.website,
           logo_url: data.logoUrl,
+          signature_url: data.signatureUrl, // 3. Ensure this column exists in Supabase
           content: data.content,
         },
       ])
@@ -236,6 +250,45 @@ export default function LetterheadGenerator() {
                 content={data.content}
                 onChange={(html) => setData({ ...data, content: html })}
               />
+            </div>
+          </section>
+
+          {/* 4. NEW SIGNATURE SECTION */}
+          <section className="space-y-4">
+            <h3 className="text-xs font-black uppercase text-zinc-500 tracking-widest flex items-center gap-2">
+              <PenTool size={14} /> Signature & Stamp
+            </h3>
+
+            <div>
+              <label className="block text-sm font-bold text-zinc-800 mb-1.5">
+                Authorized Signature
+              </label>
+              <div className="border-2 border-dashed border-zinc-300 rounded-lg p-4 hover:bg-blue-50 hover:border-blue-400 transition-all cursor-pointer relative group">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleSignatureUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <div className="flex flex-col items-center text-zinc-500 group-hover:text-blue-600">
+                  {data.signatureUrl ? (
+                    <img
+                      src={data.signatureUrl}
+                      className="h-16 object-contain mb-2"
+                    />
+                  ) : (
+                    <PenTool size={24} />
+                  )}
+                  <span className="text-xs mt-1 font-semibold uppercase">
+                    {data.signatureUrl
+                      ? "Change Signature"
+                      : "Upload Signature Image"}
+                  </span>
+                </div>
+              </div>
+              <p className="text-[10px] text-zinc-400 mt-2 italic">
+                Tip: Use a transparent PNG for best results.
+              </p>
             </div>
           </section>
         </div>
